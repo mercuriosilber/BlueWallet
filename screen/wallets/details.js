@@ -32,17 +32,17 @@ export default class WalletDetails extends Component {
 
   constructor(props) {
     super(props);
-
+    this.props.navigation.setParams({ isLoading: true, saveAction: () => this.setLabel() });
     const wallet = props.navigation.getParam('wallet');
     const address = wallet.getAddress();
     const isLoading = true;
+
     this.state = {
       isLoading,
       walletName: wallet.getLabel(),
       wallet,
       address,
     };
-    this.props.navigation.setParams({ isLoading, saveAction: () => this.setLabel() });
   }
 
   componentDidMount() {

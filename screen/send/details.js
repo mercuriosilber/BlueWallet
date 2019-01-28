@@ -78,6 +78,7 @@ export default class SendDetails extends Component {
       networkTransactionFees: new NetworkTransactionFee(1, 1, 1),
       feeSliderValue: 1,
       bip70TransactionExpiration: null,
+      renderWalletSelectionButtonHidden: false,
     };
   }
 
@@ -126,6 +127,8 @@ export default class SendDetails extends Component {
   };
 
   async componentDidMount() {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
     let recommendedFees = await NetworkTransactionFees.recommendedFees().catch(response => {
       this.setState({
         fee: response.halfHourFee,
@@ -157,6 +160,19 @@ export default class SendDetails extends Component {
       }
     }
   }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = () => {
+    this.setState({ renderWalletSelectionButtonHidden: true });
+  };
+
+  _keyboardDidHide = () => {
+    this.setState({ renderWalletSelectionButtonHidden: false });
+  };
 
   decodeBitcoinUri(uri) {
     try {
@@ -466,6 +482,7 @@ export default class SendDetails extends Component {
   };
 
   renderWalletSelectionButton = () => {
+    if (this.state.renderWalletSelectionButtonHidden) return;
     return (
       <View style={{ marginBottom: 24, alignItems: 'center' }}>
         {!this.state.isLoading && (
